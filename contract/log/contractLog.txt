@@ -1,0 +1,25 @@
+1_deploy_contracts.js
+=====================
+
+   Deploying 'Shepherd'
+   --------------------
+   > transaction hash:    0x2ac0834cb8171f6a6cc428b3daf1602b0f493f154a6cef70c350e6be8fa7d25f
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xa8CEaCa348e7FadccD5EBD4B332D7239612b9eb0
+   > block number:        13
+   > block timestamp:     1669867083
+   > account:             0x4bAe322483313076294D47ECC9BD891Cf10c83C7
+   > balance:             0
+   > gas used:            2447677 (0x25593d)
+   > gas price:           0 gwei
+   > value sent:          0 ETH
+   > total cost:          0 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0 ETH

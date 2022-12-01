@@ -1,16 +1,17 @@
+require('dotenv').config();
+
 const HttpError = require('../models/http-error');
 const User = require('../models/user.models');
 // web3
 const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545')); // 가나슈와 연동(로컬)
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.RPC_NETWORK_ADDRESS)); // 가나슈와 연동(로컬)
 
 // contract
 const shepherdAbi = require('../../contract/abi/shepherdabi');
 const contractHx = process.env.SHEPHERD_CONTRACT_HX; // 고정
 const contract = new web3.eth.Contract(shepherdAbi, contractHx);
 const serverAddr = process.env.SERVER_ADDRESS; // abi : 복사해서 그대로 // 고정
-// const userPK = "0x6b699d95d86d84cc26b41888635e6fc180fc114b221db47de36f403b7db37286";
-const userPK = 'abb8d7468eefa707bcf1f3e1d6783c1b51e26a44f61590c28e0dbfcd7ee020cb';
+const userPK = process.env.SERVER_PK;
 
 const sendZ = async (req, res, next) => {
   const { orderAmount, userAccount, sendSupplier } = req.body;

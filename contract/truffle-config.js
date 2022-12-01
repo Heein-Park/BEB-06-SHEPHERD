@@ -41,10 +41,10 @@
  * https://trufflesuite.com/docs/truffle/getting-started/using-the-truffle-dashboard/
  */
 
-// require('dotenv').config();
-// const { MNEMONIC, PROJECT_ID } = process.env;
+require('dotenv').config();
+const { PRIVATE_KEY } = process.env;
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const PrivateKeyProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
   /**
@@ -64,12 +64,10 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    development: {
-      host: '127.0.0.1', // Localhost (default: none)
-      port: 7545, // Standard Ethereum port (default: none)
-      network_id: '5777'
-      // gas: "0x1ffffffffffffe",
-      // gasPrice: 0,      // Any network (default: none)
+    besuDev: {
+      provider: new PrivateKeyProvider(PRIVATE_KEY, 'http://127.0.0.1:8545'),
+      network_id: '1337',
+      gasPrice: 0
     }
     //
     // An additional network, but with some advanced options…
