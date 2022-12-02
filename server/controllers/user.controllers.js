@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const Web3 = require('web3');
+const { use } = require('../routes/user.route');
 const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545'));
 
 const userInfo = async (req, res, next) => {
@@ -22,6 +23,21 @@ const userInfo = async (req, res, next) => {
   delete Object.entries(user)[2][1]._id;
 
   res.status(200).json(user);
+};
+
+const accountInfo = async (req, res, next) => {
+  let account;
+  try {
+    account = await User.findOne({ account: req.query.a });
+  } catch (err) {
+    const error = new HttpError('존재하지 않는 계정입니다', 500);
+    return next(error);
+  }
+
+  delete Object.entries(account)[2][1].password;
+  delete Object.entries(account)[2][1]._id;
+
+  res.status(200).json(account);
 };
 
 const join = async (req, res, next) => {
@@ -79,6 +95,7 @@ const join = async (req, res, next) => {
   const new_address = new_account.address;
   const privateKey = new_account.privateKey;
   userData.account = new_address;
+  console.log(privateKey);
 
   const newUser = new User(userData);
   try {
@@ -123,6 +140,7 @@ const login = async (req, res, next) => {
   let existingUser;
   try {
     existingUser = await User.findOne({ email });
+    console.log(existingUser);
   } catch (err) {
     const error = new HttpError('다시 시도해주세요', 500);
     return next(error);
@@ -171,7 +189,10 @@ const login = async (req, res, next) => {
   let user;
   try {
     // 몽구스를 통해 사용자 정보를 반환하되, email과 name, account, uid, sendOrder, takeOrder만 보이게 합니다.
-    user = await User.findOne({ email }, 'email name account uid sendOrder takeOrder');
+    user = await User.findOne(
+      { email },
+      'email name account uid address sendOrder takeOrder'
+    );
   } catch (err) {
     const error = new HttpError('접근에 실패했습니다', 500);
     return next(error);
@@ -202,5 +223,6 @@ module.exports = {
   userInfo,
   join,
   login,
-  addAccount
+  addAccount,
+  accountInfo
 };

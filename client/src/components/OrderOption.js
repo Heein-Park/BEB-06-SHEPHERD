@@ -1,7 +1,3 @@
-// Modules
-import * as schema from 'features/schema';
-import { useEffect, useState } from 'react';
-
 // Material Components
 import Accordion from '@mui/material/Accordion';
 import AccordionActions from '@mui/material/AccordionActions';
@@ -18,9 +14,6 @@ import Typography from '@mui/material/Typography';
 // Icons
 import ClearIcon from '@mui/icons-material/Clear';
 
-// Custom Components
-import BaseStack from 'components/base/BaseStack';
-
 const AccordionSummary = styled((props) => (
   <MuiAccordionSummary
     {...props}
@@ -34,13 +27,32 @@ const AccordionSummary = styled((props) => (
   }
 }));
 
-function OrderOption ({ data, expanded, onChange }) {
+function OrderOption ({ data, expanded, onChange, onClick, tokenAmmount, setTokenAmmount }) {
   const {
-    id,
     title,
-    from,
     to
   } = data;
+
+  const setTokenAmmountOnlyNumber = (value) => {
+    const wordOnly = /[^\d]+/g;
+    const filtered = value.replaceAll(wordOnly, '');
+
+    let number;
+    if (filtered.length > 0)number = parseInt(filtered);
+    else number = 0;
+
+    setTokenAmmount(number);
+  };
+
+  const handleChange = (callback) => {
+    return (event) => {
+      callback(event.target.value);
+    };
+  };
+
+  const resetTokenAmount = () => {
+    setTokenAmmount(0);
+  };
 
   return (
     <Accordion
@@ -70,34 +82,33 @@ function OrderOption ({ data, expanded, onChange }) {
           }
         })}
       >
-        <Typography variant='subheader1' sx={{ pb: 1 }}>
-          {`${title} #${id}`}
+        <Typography variant='subheader1' sx={{ pb: 1, overflowWrap: 'anywhere' }}>
+          {title}
         </Typography>
         <Box sx={{
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'space-between'
         }}
         >
-          <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-            From {`${from}`}
+          <Typography variant='body2' sx={{ color: 'text.secondary', overflowWrap: 'anywhere' }}>
+            {to.locationAddress}
           </Typography>
-          <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-            To {`${to}`}
+          <Typography variant='body2' sx={{ color: 'text.secondary', overflowWrap: 'anywhere' }}>
+            {to.accountAddress}
           </Typography>
         </Box>
+
       </AccordionSummary>
       <AccordionDetails
         sx={{
           display: 'flex',
           alignItems: 'stretch',
           flexDirection: 'column',
-          pb: 0
+          pb: 0,
+          mt: '1em'
         }}
       >
-
-        <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-          Detail
-        </Typography>
         <TextField
           label='Amount'
           size='small'
@@ -105,12 +116,15 @@ function OrderOption ({ data, expanded, onChange }) {
           InputLabelProps={{
             shrink: true
           }}
+          value={tokenAmmount}
+          onChange={handleChange(setTokenAmmountOnlyNumber)}
           InputProps={{
-            startAdornment: <InputAdornment position='start'>kg</InputAdornment>,
             endAdornment: (
               <InputAdornment position='end'>
-                <IconButton size='small'>
-                  <ClearIcon fontSize='small' />
+                <IconButton size='small' onClick={resetTokenAmount}>
+                  <ClearIcon
+                    fontSize='small'
+                  />
                 </IconButton>
               </InputAdornment>
             ),
@@ -130,6 +144,7 @@ function OrderOption ({ data, expanded, onChange }) {
       >
         <Button
           variant='text'
+          onClick={onClick}
         >Offer
         </Button>
       </AccordionActions>
@@ -137,69 +152,4 @@ function OrderOption ({ data, expanded, onChange }) {
   );
 }
 
-function MakeOrder () {
-  const [availableOrders, setOrders] = useState([]);
-  const [expanded, setExpanded] = useState(false);
-
-  const handleChange = (panel) => (event, newExpanded) => {
-    setExpanded(newExpanded ? panel : false);
-  };
-
-  const loadList = () => {
-    setOrders([
-      {
-        id: 1,
-        title: '포스코에서 철강 발주',
-        from: '포항',
-        to: '대구',
-        orderer: '건양엔지니어링'
-      },
-      {
-        id: 2,
-        title: '포스코에서 철강 발주',
-        from: '포항',
-        to: '대구',
-        orderer: '건양엔지니어링'
-      }
-    ]);
-  };
-
-  // Transaction 목록을 불러올 때마다 적용함
-  useEffect(loadList, []);
-
-  const validationTest = (
-    Array.isArray(availableOrders) &&
-    availableOrders.length > 0 &&
-    availableOrders.every((item) => {
-      const errors = schema.order.validate(item);
-      if (errors.length > 0) {
-        errors.forEach(error => console.error(error));
-      }
-      return errors.length < 1;
-    })
-  );
-
-  return (
-    <BaseStack>
-      <Typography variant='h5' sx={{ pb: 1 }}>
-        Make an Order
-      </Typography>
-      <Typography variant='h6' color={(theme) => theme.palette.text.secondary} sx={{ pb: 2, fontWeight: 'normal', fontSize: '1.2rem' }}>
-        Orderer:
-      </Typography>
-      {
-        validationTest
-          ? availableOrders.map((item, i) => {
-            return <OrderOption key={i + 1} data={item} expanded={expanded === i + 1} onChange={handleChange(i + 1)} />;
-          })
-          : (
-            <Typography>
-              You don't have any available order yet.
-            </Typography>
-            )
-      }
-    </BaseStack>
-  );
-}
-
-export default MakeOrder;
+export default OrderOption;
